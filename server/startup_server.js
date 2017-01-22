@@ -51,17 +51,6 @@ app.get('/', function(req, res){
     res.render(__dirname + '/views/index_1.html', {"error" : err});
 });
 
-app.get('/logout', function(req, res){
-    req.session.destroy(function(err){
-        if (err) {
-            console.log(err);
-        }
-        else{
-            res.redirect("/");
-        }
-    });
-});
-
 app.post('/', function(req, res){
     var uid = req.body.uid;
     var pass = req.body.pass;
@@ -72,6 +61,17 @@ app.post('/', function(req, res){
         else{
             req.session.uid = uid;
             res.render(__dirname + '/views/home.html', {"uid" : req.session.uid});
+        }
+    });
+});
+
+app.get('/logout', function(req, res){
+    req.session.destroy(function(err){
+        if (err) {
+            console.log(err);
+        }
+        else{
+            res.redirect("/");
         }
     });
 });
