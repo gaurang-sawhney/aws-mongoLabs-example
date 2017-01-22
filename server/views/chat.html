@@ -47,6 +47,7 @@
                 document.getElementById("chatArea").scrollHeight;
         });
 
+        // Sending subscribe command for this user
         socket.on('connect', function(){
             socket.emit('subscribeChannel', "<%= uid %>");
         });
@@ -65,6 +66,7 @@
             socket.emit("message", msg);
         }
 
+        // Function to enable switching b/w different chats with different users.
         function changeChat(userName){
             var previousUser =  $("#receiver").text();
             chatData[previousUser] = $("#chatArea").text();
