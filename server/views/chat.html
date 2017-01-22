@@ -1,0 +1,87 @@
+<html>
+    <title> Chat - Startup Funding </title>
+    <script src="js/socket.io.js"></script>
+    <script type="text/javascript" src="https://ajax.microsoft.com/ajax/jQuery/jquery-1.4.2.min.js"></script>
+
+    <body>
+        <div align="center">
+            <h1>Chat</h1>
+            <h3>Welcome <%= uid%> <a href="/logout">Logout</a><h3>
+            <div>
+                <p id="receiver"></p>
+                <div id="mainDiv" style="position: absolute; left:10; top:150;">
+                    <div id="textAreaDiv" style="border: 1px solid; border-radius: 5px;">
+                        <textarea id="chatArea" style="width: 600px; height: 250px;" readonly="readonly"></textarea>
+                    </div><br>
+                    <div id="chatDiv" style="border: 1px solid; border-radius: 5px;">
+                        <textarea id="message" style="width: 520px; height: 40px; margin:4;"></textarea>
+                        <input type="button" value="Send" onclick="sendMsg()" style="height:35;"></button>
+                    </div>
+                </div>
+                <div id="userDiv" style="position: absolute; left:620; top:150; border: 1px solid; border-radius: 5px; min-height:330; min-width:80">
+                </div>
+            </div>
+        </div>
+    </body>
+    
+    <script type="text/javascript">
+
+        var socket = io.connect('http://ec2-54-206-119-238.ap-southeast-2.compute.amazonaws.com:10000');
+
+        var chatData = {};
+        
+        // Handler for messages received on the socket.
+        socket.on('message', function (message) {
+            var splitStr =  message.split("-");
+            var sender = splitStr[0].trim();
+            var data = "";
+            if (chatData[sender] != undefined){
+                data += chatData[sender];
+            }
+            data += message + "\n";
+            if ($("#receiver").text() == sender){
+                 $("#chatArea").text(data);
+            }
+            chatData[sender] = data;
+            document.getElementById("chatArea").scrollTop = 
+                document.getElementById("chatArea").scrollHeight;
+        });
+
+        socket.on('connect', function(){
+            socket.emit('subscribeChannel', "<%= uid %>");
+        });
+
+        function sendMsg(){
+            var receiver = $("#receiver").text();
+            if(receiver == ""){
+                return
+            }
+            var sender = "<%= uid %>";
+            var msg = receiver + " " + sender + " - " + $("#message").val().trim();
+            var text = $("#chatArea").text() +  + "Me - " + $("#message").val().trim() + "\n";
+            $("#chatArea").text(text);
+            chatData[receiver] = text;
+            $("#message").val('');
+            socket.emit("message", msg);
+        }
+
+        function changeChat(userName){
+            var previousUser =  $("#receiver").text();
+            chatData[previousUser] = $("#chatArea").text();
+            $("#receiver").html("<b>" + userName + "<b>");
+            if (chatData[userName] != undefined) {
+                $("#chatArea").text(chatData[userName]);
+            }
+            else {
+                $("#chatArea").text("");
+            }
+        }
+        
+        var data =  "<%= users %>";
+        var userList = data.split(",");
+        for (var i in userList){
+            var userName = userList[i];
+            $("#userDiv").append("<label onclick=changeChat('" + userName + "')>" + userList[i] + "</label><br>");
+        }
+    </script>
+</html>

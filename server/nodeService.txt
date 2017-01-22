@@ -1,0 +1,35 @@
+DIRPATH="/home/bitnami/snapcare_test/aws-mongoLabs-example/server"
+ 
+DESC="Node Server"
+NODEUSER="root"
+NAME=node
+DAEMON=/opt/bitnami/nodejs/bin/$NAME
+DAEMON_ARGS="$DIRPATH/startup_server.js"
+ 
+PIDFILE="/var/run/startup_server.pid"
+ 
+ 
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || { echo "can't find Node.js ($DAEMON)" >&2; exit 0; }
+ 
+ 
+ 
+case "$1" in
+
+    start)
+        echo "Starting $DESC"
+        start-stop-daemon --start --quiet --make-pidfile --pidfile $PIDFILE --chdir $DIRPATH --background --exec $DAEMON -- $DAEMON_ARGS
+        ;;
+                
+    stop)
+        echo "Stopping $DESC"
+        start-stop-daemon --stop --quiet --pidfile $PIDFILE 
+        ;;
+ 
+    restart|force-reload)
+        start-stop-daemon --stop --quiet --pidfile $PIDFILE
+        sleep 15
+        start-stop-daemon --start --quiet --make-pidfile --pidfile $PIDFILE --chdir $DIRPATH --background --exec $DAEMON -- $DAEMON_ARGS
+        ;;
+esac
+exit 0

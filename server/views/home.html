@@ -1,0 +1,56 @@
+<html>
+    <title> Welcome - Startup Funding </title>
+    <script type="text/javascript" src="https://ajax.microsoft.com/ajax/jQuery/jquery-1.4.2.min.js"></script>
+    <script>
+        function search(){
+            var low = document.getElementById("lowFunding").value;
+            var high = document.getElementById("highFunding").value;
+            console.log("low : " + low + " high : " + high);
+            $.ajax({
+                url : "/search?lowFunding=" + low + "&highFunding=" + high,
+                type : "GET",
+                success : function(response) {
+                    console.log("SUCCESS : "  + response);
+                    $("#responseDiv").html(response);
+                },
+                error : function(err){
+                    console.log("ERROR : "  + err);
+                    $("#responseDiv").html(err);
+                }
+            });
+        }
+        
+        function logout(){
+            
+        }
+
+    </script>
+    <body>
+        <div align="center">
+            <h1>Search</h1> 
+            <h3>Welcome <%= uid%> <a href="/logout">Logout</a><h3>
+           <table>
+                <tr>
+                    <td>
+                    <label>Lowest Funding:</label>
+                    </td>
+                    <td>
+                    <input type="number" name="lowFunding" id="lowFunding"></input><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    <label>Highest Funding:</label>
+                    </td>
+                    <td>
+                    <input type="number" name="highFunding" id="highFunding"></input><br><br>
+                    </td>
+                </tr>
+            </table>
+            <input type="button" onClick="search()" value="Search" />
+            <input type="button" value="Chat" onclick="window.open('/chat')" />
+        </div>
+        <div id="responseDiv" align="center">
+        </div>
+    </body>
+</html>
